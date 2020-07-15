@@ -198,7 +198,3 @@ Overall, both the number of cases as well as the infection rate have increased s
 
 
 
-```{r}
-sessionInfo()
-```
-
