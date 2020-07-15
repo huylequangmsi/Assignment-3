@@ -9,7 +9,7 @@ output: pdf_document
 knitr::opts_chunk$set(warning = F)
 ```
 
-## 1.Introduction
+## 1. Introduction
 
 Coronavirus (Covid19) brings about a more severe crisis than almost any before. To protect people from the coronavirus, governments worldwide have had to implement safety measures that have a huge impact on personal and economic life. This report, however, does not aim at analyzing the consequences of Covid19, but to give an overview of the changes in the total of cases and infection rates over time (from January 2020 until July 2020). This report will zoom in the situation in some selected countries where coronavirus is more prevalent.
 
@@ -195,3 +195,10 @@ Overall, both the number of cases as well as the infection rate have increased s
 
 - I already set up the AWS and RStudio Server, but I could not complete the assignment on RStudio Server because it failed to install the sparklyr package, and it constantly asked me to give Username and Password each time I want to commit to GitHub.
 - I am not able to run the ml_linear_regression because I always received error message: org.apache.spark.sql.Analysis (*I did not have this problem if I use mtcar database as an example*)
+
+
+
+```{r}
+sessionInfo()
+```
+
