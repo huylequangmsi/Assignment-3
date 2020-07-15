@@ -128,7 +128,9 @@ data_final <- data_long %>%
 
 ## Draw graphs
 
-After having a cleaned dataset, we start the analysis
+After having a cleaned dataset, we start the analysis by drawing two graphs. The first graph shows the overall change in time of log number of confirmed cases of infection in eight selected countries. While the number of cases is leveled off in China, Germany and Japan, it slightly increases in the United Kingdom, and remarkably increases in Brazil, the US and Mexico. These three latter countries will expect an increasing number of infected people in the upcoming days due to this increasing trend. 
+
+The second graph shows the infection rate for each of eight selected countries. The infection rate is calculated by dividing the total of confirmed cases by the total population. To be easy to read, the infection rate is presented per 100,000 people. The country with highest infection rate is the US with more than 1000 patients per 100,000 people, followed by Brazil with nearly 900 cases per 100,000 inhabitants. Noticeably, this rate is increasing sharply in both countries. Two countries with lowest infection rate are China and Japan. Germany and the United Kingdom have around 250 cases per 100,000 people, however, the infection rate seems to be leveled off. Mexico has the infection rate similar to Germany and United Kingdom, but this rate is on the increasing trend. 
 
 ```{r, warning=FALSE}
 
@@ -161,10 +163,16 @@ ggplot(aes(x = date, y = infection_rate),
 
 # Regression model
 
+Finally, we run the regression model to explain the number of confirmed cases by three independent variables, namely, country fixed effects, population and the number of days since the begin of data collection.
+
+The base country for comparison is Brazil. Compared to Brazil, only US has lower confirmed cases, **ceteris paribus**. Both population and the number of days since the begin of data collection are positively correlated with the number of infected people, other things being equal. For example, each day since 22 Jan 2020, there are 0.02155 confirmed cases increased, compared to the previous day, **ceteris paribus**.  
+
 ```{r}
 
 data_final %>% lm(formula = log.confirmed_cases ~ country + population + day_difference) %>% 
 summary()
 
 ```
+## 4. Conclusion
 
+Overall, both the number of cases as well as the infection rate have increased sharply in North and Latin America since March 2020. Some countries have reacted quickly with strong measures such as Germany, Japan and China have seen a level off in the number of cases.
