@@ -174,7 +174,7 @@ ggplot(aes(x = date, y = infection_rate),
 
 Finally, we run the regression model to explain the number of confirmed cases by three independent variables, namely, country fixed effects, population and the number of days since the begin of data collection.
 
-The base country for comparison is Brazil. Compared to Brazil, only US has lower confirmed cases, **ceteris paribus**. Both population and the number of days since the begin of data collection are positively correlated with the number of infected people, other things being equal. For example, each day since 22 Jan 2020, there are 0.02155 confirmed cases increased, compared to the previous day, **ceteris paribus**.  
+The base country for comparison is Brazil. Compared to Brazil, only US has lower confirmed cases, *ceteris paribus*. Both population and the number of days since the begin of data collection are positively correlated with the number of infected people, other things being equal. For example, each day since 22 Jan 2020, there are 0.02155 confirmed cases increased, compared to the previous day, *ceteris paribus*.  
 
 
 ```{r}
@@ -191,7 +191,7 @@ summary()
 Overall, both the number of cases as well as the infection rate have increased sharply in North and Latin America since March 2020. Some countries have reacted quickly with strong measures such as Germany, Japan and China have seen a level off in the number of cases.
 
 
-### Notes:
+### *Notes*:
 
 - I already set up the AWS and RStudio Server, but I could not complete the assignment on RStudio Server because it failed to install the sparklyr package, and it constantly asked me to give Username and Password each time I want to commit to GitHub.
-- I am not able to run the ml_linear_regression because I always received error message: org.apache.spark.sql.Analysis (I did not have this problem if I use mtcar database as an example)
+- I am not able to run the ml_linear_regression because I always received error message: org.apache.spark.sql.Analysis (*I did not have this problem if I use mtcar database as an example*)
