@@ -74,7 +74,7 @@ names(lookup.table)[names(lookup.table) == 'Province_State'] <- 'state'
 
 ```
 
-# Establish Spark server and copy two datasets to this server
+## Establish Spark server and copy two datasets to this server
 
 ```{r, warning=FALSE}
 
@@ -92,24 +92,64 @@ lookup.table <- copy_to(sc, lookup.table, overwrite = T)
 
 data_long <- full_join(time.series.long, lookup.table, by = c("state","country"))
 
+# Rename variables
+
+data_long <- data_long %>% 
+    rename(latitude = Lat,
+           longitude = Long_,
+           population = Population,
+           country_code = iso3,
+           confirmed_cases = value)
+
 # Make a smaller dataset and generate two new variables
 
 data_final <- data_long %>% 
-    filter(country == c("Germany", "China", "Japan",
-                        "United Kingdom", "US",
-                        "Brazil", "Mexico")) %>%
+    filter(country == "Germany"|country == "China"|country == "Japan"|
+            country == "United Kingdom"|country == "US"|
+            country =="Brazil"|country == "Mexico")%>%
     mutate(log.confirmed_cases = log((confirmed_cases+1)),
-           infection_rate = confirmed_cases/total_population*100000)
+           infection_rate = confirmed_cases/population*100000)
 
 
 ```
 
 ## Including Plots
 
-You can also embed plots, for example:
+```{r, warning=FALSE}
 
-```{r pressure, echo=FALSE}
-plot(pressure)
+## Overall change in time of log number of cases
+
+ggplot(aes(x = date, y = log.confirmed_cases),
+       data = data_final) +
+    stat_summary(fun.y = mean,
+                 geom = "line") + 
+    theme_bw() +
+    facet_wrap(~country) +
+    labs(x = "Date", y = "Log number of cases",
+         title = "Overall change in time of log number of cases by country",
+         caption = "Data: JHU CSSE COVID-19 Dataset")
+
+# Infection rate
+
+ggplot(aes(x = date, y = infection_rate),
+       data = data_final) +
+    stat_summary(fun.y = mean,
+                 geom = "line") +
+    facet_wrap(~country) +
+    scale_y_continuous(labels = scales::number_format(accuracy = 1)) +
+    theme_bw() +
+    labs(x = "Date", y = "Infection rate (per 100,000 people)",
+         title = "Change in time of infection rate by country",
+         caption = "Data: JHU CSSE COVID-19 Dataset. Infection rate per 100,000 people")
+
 ```
 
-Note that the `echo = FALSE` parameter was added to the code chunk to prevent printing of the R code that generated the plot.
+# Regression model
+
+```{r}
+
+data_final %>% lm(formula = log.confirmed_cases ~ country + population + day_difference) %>% 
+summary()
+
+```
+
