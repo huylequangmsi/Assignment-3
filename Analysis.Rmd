@@ -11,7 +11,7 @@ knitr::opts_chunk$set(warning = F)
 
 ## 1.Introduction
 
-Coronavirus (Covid19) brings about a more severe crisis than almost any before. To protect people from the coronavirus, governments worldwide have had to implement safety measures that have a huge impact on personal and economic life. This report, however, does not aim at analyzing the consequences of Covid19, but to give an overview of the changes in the total of cases and infection rates over time (from January 2020 until June 2020). This report will zoom in the situation in some selected countries where coronavirus is more prevalent.
+Coronavirus (Covid19) brings about a more severe crisis than almost any before. To protect people from the coronavirus, governments worldwide have had to implement safety measures that have a huge impact on personal and economic life. This report, however, does not aim at analyzing the consequences of Covid19, but to give an overview of the changes in the total of cases and infection rates over time (from January 2020 until July 2020). This report will zoom in the situation in some selected countries where coronavirus is more prevalent.
 
 ## 2. Dataset
 
@@ -24,6 +24,7 @@ The general approach for analysis in this assignment is to first download the tw
 
 First of all, we need to load necessary packages in R for data cleaning and analysis. There are three packages that we will need in this exercise: tidyverse, sparklyr and lubridate.
 
+
 ```{r, warning=FALSE}
 
 # Load necessary packages
@@ -35,6 +36,7 @@ library(lubridate)
 ```
 
 After loading the necessary packages, we download the two datasets for Coronavirus from Github and store them in two objects: (1) lookup.table and (2) time.series.
+
 
 ```{r, warning=FALSE}
 
@@ -50,7 +52,9 @@ time.series <- read.csv(url(time.series.url))
 
 ```
 
-We proceed with cleaning the time.series data by first deleting unnecessary columns, and reshape the time series data in long format. We also calculate the number of days from the begin of data collection (22 January 2020) until the last date of the dataset.
+
+We proceed with cleaning the time series data by first deleting unnecessary columns, and reshaping the time series data in long format. We also calculate the number of days from the begin of data collection (22 January 2020) until the last day of the dataset.
+
 
 ```{r, warning=FALSE}
 
@@ -83,11 +87,13 @@ names(lookup.table)[names(lookup.table) == 'Province_State'] <- 'state'
 
 ```
 
-## Establish Spark server and copy two datasets to this server
+
+### Establish Spark server
 
 To take advantage of the ability for large-scale data processing, we set up Spark server and do further analysis on this server.
 
-First, we create a local Spark server, and then copy both datasets that we cleaned above to this server. Further cleaning tasks are: joining two datasets, and make a smaller version of the dataset which includes only 8 countries, namely: Germany, China,Japan, United Kingdom, US, Brazil, and Mexico. Finally, we create two new variables: (1) log number of confirmed cases, and infection rate per 100,000 people.
+First, we create a local Spark server, and then copy both datasets that we cleaned above to this server. Further cleaning tasks are: joining two datasets, and make a smaller version of the dataset which includes only 8 countries, namely: Germany, China, Japan, United Kingdom, US, Brazil, and Mexico. Finally, we create two new variables: (1) log number of confirmed cases, and infection rate per 100,000 people.
+
 
 ```{r, warning=FALSE}
 
@@ -128,9 +134,11 @@ data_final <- data_long %>%
 
 ## Draw graphs
 
-After having a cleaned dataset, we start the analysis by drawing two graphs. The first graph shows the overall change in time of log number of confirmed cases of infection in eight selected countries. While the number of cases is leveled off in China, Germany and Japan, it slightly increases in the United Kingdom, and remarkably increases in Brazil, the US and Mexico. These three latter countries will expect an increasing number of infected people in the upcoming days due to this increasing trend. 
+After having a cleaned dataset, we start the analysis by drawing two graphs. The first graph shows the overall change in time of log number of confirmed cases of infection in eight selected countries. While the number of cases is leveled off in China, Germany and Japan, it slightly increases in the United Kingdom, and remarkably increases in Brazil, the US and Mexico. These three latter countries will expect an increasing number of infected people in the upcoming days due to this increasing trend.
 
-The second graph shows the infection rate for each of eight selected countries. The infection rate is calculated by dividing the total of confirmed cases by the total population. To be easy to read, the infection rate is presented per 100,000 people. The country with highest infection rate is the US with more than 1000 patients per 100,000 people, followed by Brazil with nearly 900 cases per 100,000 inhabitants. Noticeably, this rate is increasing sharply in both countries. Two countries with lowest infection rate are China and Japan. Germany and the United Kingdom have around 250 cases per 100,000 people, however, the infection rate seems to be leveled off. Mexico has the infection rate similar to Germany and United Kingdom, but this rate is on the increasing trend. 
+
+The second graph shows the infection rate for each of eight selected countries. The infection rate is calculated by dividing the total of confirmed cases by the total population. To be easy to read, the infection rate is presented per 100,000 people. The country with highest infection rate is the US with more than 1,000 patients per 100,000 people, followed by Brazil with nearly 900 cases per 100,000 inhabitants. Noticeably, this rate is increasing sharply in both countries. Two countries with lowest infection rate are China and Japan. Germany and the United Kingdom have around 250 cases per 100,000 people, however, the infection rate seems to be leveled off. Mexico has the infection rate similar to Germany and United Kingdom, but this rate is on the increasing trend. 
+
 
 ```{r, warning=FALSE}
 
@@ -161,11 +169,13 @@ ggplot(aes(x = date, y = infection_rate),
 
 ```
 
-# Regression model
+### Regression model
+
 
 Finally, we run the regression model to explain the number of confirmed cases by three independent variables, namely, country fixed effects, population and the number of days since the begin of data collection.
 
 The base country for comparison is Brazil. Compared to Brazil, only US has lower confirmed cases, **ceteris paribus**. Both population and the number of days since the begin of data collection are positively correlated with the number of infected people, other things being equal. For example, each day since 22 Jan 2020, there are 0.02155 confirmed cases increased, compared to the previous day, **ceteris paribus**.  
+
 
 ```{r}
 
@@ -173,6 +183,15 @@ data_final %>% lm(formula = log.confirmed_cases ~ country + population + day_dif
 summary()
 
 ```
+
+
 ## 4. Conclusion
 
+
 Overall, both the number of cases as well as the infection rate have increased sharply in North and Latin America since March 2020. Some countries have reacted quickly with strong measures such as Germany, Japan and China have seen a level off in the number of cases.
+
+
+### Notes:
+
+- I already set up the AWS and RStudio Server, but I could not complete the assignment on RStudio Server because it failed to install the sparklyr package, and it constantly asked me to give Username and Password each time I want to commit to GitHub.
+- I am not able to run the ml_linear_regression because I always received error message: org.apache.spark.sql.Analysis (I did not have this problem if I use mtcar database as an example)
