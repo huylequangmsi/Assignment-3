@@ -11,11 +11,18 @@ knitr::opts_chunk$set(warning = F)
 
 ## 1.Introduction
 
+Coronavirus (Covid19) brings about a more severe crisis than almost any before. To protect people from the coronavirus, governments worldwide have had to implement safety measures that have a huge impact on personal and economic life. This report, however, does not aim at analyzing the consequences of Covid19, but to give an overview of the changes in the total of cases and infection rates over time (from January 2020 until June 2020). This report will zoom in the situation in some selected countries where coronavirus is more prevalent.
+
 ## 2. Dataset
+
+The dataset is taken from John Hopkins University (the JHU CSSE COVID-19 Dataset) which monitors the coronavirus epidemie situation all over the world and collects data on daily basis. The main data for analysis is the "Time_series_covid19_confirmed_global" showing the total of confirmed infected cases per country from 22 Jan 2020 until now. This dataset is then merged with the “UID_ISO_FIPS_LookUp_Table” to add some additional country characteristics variables (e.g. population, longitude, latitude, country code, states...)
+
 
 ## 3. Descriptive analysis
 
-xxx
+The general approach for analysis in this assignment is to first download the two datasets from GitHub, clean and merge these two datasets on Spark server, and then carry out some descriptive analysis (graphs) and regression analysis.
+
+First of all, we need to load necessary packages in R for data cleaning and analysis. There are three packages that we will need in this exercise: tidyverse, sparklyr and lubridate.
 
 ```{r, warning=FALSE}
 
@@ -27,7 +34,7 @@ library(lubridate)
 
 ```
 
-xxx
+After loading the necessary packages, we download the two datasets for Coronavirus from Github and store them in two objects: (1) lookup.table and (2) time.series.
 
 ```{r, warning=FALSE}
 
@@ -42,7 +49,8 @@ time.series.url <- "https://github.com/CSSEGISandData/COVID-19/blob/master/csse_
 time.series <- read.csv(url(time.series.url))
 
 ```
-xxx
+
+We proceed with cleaning the time.series data by first deleting unnecessary columns, and reshape the time series data in long format. We also calculate the number of days from the begin of data collection (22 January 2020) until the last date of the dataset.
 
 ```{r, warning=FALSE}
 
@@ -58,6 +66,7 @@ time.series.long <- pivot_longer(data = time.series,
                           names_to = "date") # reshape to long format
 
 # Change to date format
+
 time.series.long$date <- as.Date(gsub("X", "", time.series.long$date), "%m.%d.%y") 
 
 begin.date <- as.Date("2020-01-22")
@@ -75,6 +84,10 @@ names(lookup.table)[names(lookup.table) == 'Province_State'] <- 'state'
 ```
 
 ## Establish Spark server and copy two datasets to this server
+
+To take advantage of the ability for large-scale data processing, we set up Spark server and do further analysis on this server.
+
+First, we create a local Spark server, and then copy both datasets that we cleaned above to this server. Further cleaning tasks are: joining two datasets, and make a smaller version of the dataset which includes only 8 countries, namely: Germany, China,Japan, United Kingdom, US, Brazil, and Mexico. Finally, we create two new variables: (1) log number of confirmed cases, and infection rate per 100,000 people.
 
 ```{r, warning=FALSE}
 
@@ -113,7 +126,9 @@ data_final <- data_long %>%
 
 ```
 
-## Including Plots
+## Draw graphs
+
+After having a cleaned dataset, we start the analysis
 
 ```{r, warning=FALSE}
 
