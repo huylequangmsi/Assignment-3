@@ -40,7 +40,6 @@ lookup.table <- read.csv(url(lookup.table.url))
 
 time.series.url <- "https://github.com/CSSEGISandData/COVID-19/blob/master/csse_covid_19_data/csse_covid_19_time_series/time_series_covid19_confirmed_global.csv?raw=true"
 time.series <- read.csv(url(time.series.url))
-head(time.series.long)
 
 ```
 xxx
@@ -75,10 +74,34 @@ names(lookup.table)[names(lookup.table) == 'Province_State'] <- 'state'
 
 ```
 
+# Establish Spark server and copy two datasets to this server
+
+```{r, warning=FALSE}
+
+# Connect to local Spark server
+
+sc <- spark_connect(master = "local", 
+                    version = "2.3")
+
+# Copy two datasets to Spark server
+
+time.series.long <- copy_to(sc, time.series.long, overwrite = T)
+lookup.table <- copy_to(sc, lookup.table, overwrite = T)
+
+# Merge two datasets
+
+data_long <- full_join(time.series.long, lookup.table, by = c("state","country"))
+
+# Make a smaller dataset and generate two new variables
+
+data_final <- data_long %>% 
+    filter(country == c("Germany", "China", "Japan",
+                        "United Kingdom", "US",
+                        "Brazil", "Mexico")) %>%
+    mutate(log.confirmed_cases = log((confirmed_cases+1)),
+           infection_rate = confirmed_cases/total_population*100000)
 
 
-```{r cars}
-summary(cars)
 ```
 
 ## Including Plots
